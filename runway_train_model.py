@@ -34,8 +34,12 @@ generate_inputs = {
 	'iterations': runway.number(min=100, max=5000, default=1000, step=1.0)
 }
 
+# generate_outputs = {
+# 	'latent_vector': runway.file()
+# }
+
 generate_outputs = {
-	'latent_vector': runway.file()
+	'generated': runway.image(width=512, height=512)
 }
 
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
@@ -53,11 +57,13 @@ def find_in_space(model, inputs):
 	generated_dlatents = generator.get_dlatents()
 	for img_array, dlatent, img_name in zip(generated_images, generated_dlatents, names):
 		img = PIL.Image.fromarray(img_array, 'RGB')
-		img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
-		np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
+		img.resize((512, 512))  
+	#	img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
+	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 
 	generator.reset_dlatents()
-	return {'latent_vector' : dlatent}
+	#return {'latent_vector' : dlatent}
+	return {'image': img}
 
 if __name__ == '__main__':
 	runway.run(debug=True)
