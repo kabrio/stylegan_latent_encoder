@@ -50,7 +50,8 @@ generate_outputs = {
 def find_in_space(model, inputs):
 	#names = os.path.splitext(os.path.basename(inputs['portrait']))
 	names = "test_name"
-	perceptual_model.set_reference_images(inputs['portrait'])
+	image = [inputs['portrait']]
+	perceptual_model.set_reference_images(image)
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)
 	pbar = tqdm(op, leave=False, total=inputs[iterations])
 	for loss in pbar:

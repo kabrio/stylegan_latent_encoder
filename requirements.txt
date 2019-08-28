@@ -13,6 +13,7 @@ h5py==2.9.0
 idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10
+keras
 Keras-Applications==1.0.7
 Keras-Preprocessing==1.0.9
 Markdown==3.0.1
