@@ -113,3 +113,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.pkl
+images/hec.jpg

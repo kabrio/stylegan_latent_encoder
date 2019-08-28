@@ -62,7 +62,7 @@ def find_in_space(model, inputs):
 	generated_dlatents = generator.get_dlatents()
 	for img_array, dlatent, img_name in zip(generated_images, generated_dlatents, names):
 		img = PIL.Image.fromarray(img_array, 'RGB')
-		img.resize((512, 512))  
+		img.resize((512, 512))
 	#	img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
 	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 

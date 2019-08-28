@@ -16,6 +16,16 @@ from encoder.perceptual_model import PerceptualModel
 import runway
 
 
+def load_local_image(images_path, img_size):
+	img = image.load_img(images_path, target_size=(img_size, img_size))
+	img = image.img_to_array(img)
+	img = np.expand_dims(img, 0)
+	#_img.resize(img_size, img_size)  
+	loaded_image = np.vstack(img)
+	preprocessed_image = preprocess_input(loaded_image)
+	return preprocessed_image
+
+
 @runway.setup
 def setup(opts):
 	tflib.init_tf()
@@ -65,8 +75,10 @@ generate_outputs = {
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
 	#names = os.path.splitext(os.path.basename(inputs['portrait']))
+
 	names = ["test_name"]
-	perceptual_model.set_reference_images(inputs['portrait'])
+	img = load_local_image("images/hec.jpg", 512)
+	perceptual_model.set_reference_images(img)
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)
 	pbar = tqdm(op, leave=False, total=inputs[iterations])
 	for loss in pbar:

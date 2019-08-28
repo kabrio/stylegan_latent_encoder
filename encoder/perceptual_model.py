@@ -7,7 +7,7 @@ import keras.backend as K
 
 
 def load_image(_img, img_size):
-	_img.resize(img_size, img_size)  
+	_img.resize((img_size, img_size))  
 	img = image.img_to_array(_img)
 	img = np.expand_dims(_img, 0)
 	loaded_image = np.vstack(img)
