@@ -28,7 +28,7 @@ def setup(opts):
 		G, D, Gs = pickle.load(file)
 	Gs.print_layers()	
 	generator = Generator(Gs, batch_size=1, randomize_noise=False)		
-	perceptual_model = PerceptualModel(256, layer=9, batch_size=1)
+	perceptual_model = PerceptualModel(512, layer=9, batch_size=1)
 	perceptual_model.build_perceptual_model(generator.generated_image)
 	return Gs
 
@@ -49,9 +49,8 @@ generate_outputs = {
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
 	#names = os.path.splitext(os.path.basename(inputs['portrait']))
-	names = "test_name"
-	image = [inputs['portrait']]
-	perceptual_model.set_reference_images(image)
+	names = ["test_name"]
+	perceptual_model.set_reference_images(inputs['portrait'])
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)
 	pbar = tqdm(op, leave=False, total=inputs[iterations])
 	for loss in pbar:

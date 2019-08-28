@@ -46,24 +46,21 @@ class PerceptualModel:
         self.loss = tf.losses.mean_squared_error(self.features_weight * self.ref_img_features,
                                                  self.features_weight * generated_img_features) / 82890.0
 
-    def set_reference_images(self, images_list):
-        assert(len(images_list) != 0 and len(images_list) <= self.batch_size)
-        loaded_image = load_images(images_list, self.img_size)
+    def set_reference_images(self, loaded_image):
         image_features = self.perceptual_model.predict_on_batch(loaded_image)
 
         # in case if number of images less than actual batch size
         # can be optimized further
         weight_mask = np.ones(self.features_weight.shape)
-        if len(images_list) != self.batch_size:
-            features_space = list(self.features_weight.shape[1:])
-            existing_features_shape = [len(images_list)] + features_space
-            empty_features_shape = [self.batch_size - len(images_list)] + features_space
+        features_space = list(self.features_weight.shape[1:])
+        existing_features_shape = [len(images_list)] + features_space
+        empty_features_shape = [self.batch_size - len(images_list)] + features_space
 
-            existing_examples = np.ones(shape=existing_features_shape)
-            empty_examples = np.zeros(shape=empty_features_shape)
-            weight_mask = np.vstack([existing_examples, empty_examples])
+        existing_examples = np.ones(shape=existing_features_shape)
+        empty_examples = np.zeros(shape=empty_features_shape)
+        weight_mask = np.vstack([existing_examples, empty_examples])
 
-            image_features = np.vstack([image_features, np.zeros(empty_features_shape)])
+        image_features = np.vstack([image_features, np.zeros(empty_features_shape)])
 
         self.sess.run(tf.assign(self.features_weight, weight_mask))
         self.sess.run(tf.assign(self.ref_img_features, image_features))
