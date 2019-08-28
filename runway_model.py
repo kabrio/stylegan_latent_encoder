@@ -2,15 +2,19 @@
 
 import helpers
 import os
+import argparse
 import pickle
+from tqdm import tqdm
 import PIL.Image
 import numpy as np
 import dnnlib
 import dnnlib.tflib as tflib
 import config
-from encoder.generator_model import Generator
 import matplotlib.pyplot as plt
+from encoder.generator_model import Generator
+from encoder.perceptual_model import PerceptualModel
 import runway
+
 
 
 @runway.setup(options={'people_vector': runway.file(extension='.npy'), 'checkpoint': runway.file(extension='.pkl')})

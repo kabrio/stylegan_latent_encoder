@@ -16,21 +16,37 @@ from encoder.perceptual_model import PerceptualModel
 import runway
 
 
-@runway.setup(options={'checkpoint': runway.file(extension='.pkl')})
+@runway.setup
 def setup(opts):
-	# Initialize generator and perceptual model
-	global perceptual_model
-	global generator
 	tflib.init_tf()
-	model = opts['checkpoint']
-	print("open model %s" % model)
-	with open(model, 'rb') as file:
-		G, D, Gs = pickle.load(file)
-	Gs.print_layers()	
-	generator = Generator(Gs, batch_size=1, randomize_noise=False)		
+	url = 'https://drive.google.com/uc?id=1MEGjdvVpUsu1jB4zrXZN7Y4kBBOzizDQ' # karras2019stylegan-ffhq-1024x1024.pkl
+	with dnnlib.util.open_url(url, cache_dir=config.cache_dir) as f:
+		_G, _D, Gs = pickle.load(f)
+		# _G = Instantaneous snapshot of the generator. Mainly useful for resuming a previous training run.
+		# _D = Instantaneous snapshot of the discriminator. Mainly useful for resuming a previous training run.
+		# Gs = Long-term average of the generator. Yields higher-quality results than the instantaneous snapshot.
+	Gs.print_layers()
+	global generator
+	#generator = Generator(Gs, batch_size=1, randomize_noise=False)
+	global perceptual_model
 	perceptual_model = PerceptualModel(256, layer=9, batch_size=1)
-	perceptual_model.build_perceptual_model(generator.generated_image)
+	#perceptual_model.build_perceptual_model(generator.generated_image)
 	return Gs
+
+# @runway.setup(options={'checkpoint': runway.file(extension='.pkl')})
+# def setup(opts):
+# 	# Initialize generator and perceptual model
+# 	tflib.init_tf()
+# 	model = opts['checkpoint']
+# 	print("open model %s" % model)
+# 	with open(model, 'rb') as file:
+# 		G, D, Gs = pickle.load(file)
+# 	Gs.print_layers()
+# 	global generator
+# 	generator = Generator(Gs, batch_size=1, randomize_noise=False)
+# 	perceptual_model = PerceptualModel(256, layer=9, batch_size=1)
+# 	perceptual_model.build_perceptual_model(generator.generated_image)
+# 	return Gs
 
 
 generate_inputs = {
