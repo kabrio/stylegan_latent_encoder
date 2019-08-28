@@ -7,12 +7,14 @@ import keras.backend as K
 
 
 def load_image(_img, img_size):
+	loaded_images = list()
 	_img.resize((img_size, img_size))  
 	img = image.img_to_array(_img)
 	img = np.expand_dims(_img, 0)
-	loaded_image = np.vstack(img)
-	preprocessed_image = preprocess_input(loaded_image)
-	return preprocessed_image
+	loaded_images.append(img)
+	loaded_images = np.vstack(loaded_images)
+	preprocessed_images = preprocess_input(loaded_images)
+	return preprocessed_images
 
 
 class PerceptualModel:
