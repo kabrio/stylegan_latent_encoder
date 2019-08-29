@@ -16,7 +16,7 @@ from encoder.perceptual_model import PerceptualModel
 import runway
 
 
-@runway.setup(options={'checkpoint': runway.file(extension='.pkl')})
+@runway.setup(options={'checkpoint': runway.file(extension='.pkl'), 'image dimensions': runway.number(min=128, max=1024, default=512, step=256)})
 def setup(opts):
 	# Initialize generator and perceptual model
 	global perceptual_model
@@ -28,7 +28,7 @@ def setup(opts):
 		G, D, Gs = pickle.load(file)
 	Gs.print_layers()	
 	generator = Generator(Gs, batch_size=1, randomize_noise=False)		
-	perceptual_model = PerceptualModel(512, layer=9, batch_size=1)
+	perceptual_model = PerceptualModel(opts['image dimensions'], layer=9, batch_size=1)
 	perceptual_model.build_perceptual_model(generator.generated_image)
 	return Gs
 
@@ -50,10 +50,11 @@ generate_outputs = {
 def find_in_space(model, inputs):
 	names = ["looking at you!"]
 	perceptual_model.set_reference_images(inputs['portrait'])
+	print ("image loaded")
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
-	pbar = tqdm(op, leave=False, total=inputs['iterations'])
-	for loss in pbar:
-		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
+	# pbar = tqdm(op, leave=False, total=inputs['iterations'])
+	# for loss in pbar:
+	# 	pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 	print(' '.join(names), ' loss:', loss)
 
 	# Generate images from found dlatents and save them
