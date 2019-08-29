@@ -55,7 +55,7 @@ def find_in_space(model, inputs):
 	# pbar = tqdm(op, leave=False, total=inputs['iterations'])
 	# for loss in pbar:
 	# 	pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
-	print(' '.join(names), ' loss:', loss)
+	# print(' '.join(names), ' loss:', loss)
 
 	# Generate images from found dlatents and save them
 	generated_images = generator.generate_images()
