@@ -51,6 +51,7 @@ def find_in_space(model, inputs):
 	names = ["looking at you!"]
 	perceptual_model.set_reference_images(inputs['portrait'])
 	print ("image loaded")
+	print ("encoding for: ", inputs['iterations'])
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 	pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=30.0, miniters=50)
 	for loss in pbar:
