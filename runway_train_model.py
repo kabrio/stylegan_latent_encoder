@@ -52,10 +52,10 @@ def find_in_space(model, inputs):
 	perceptual_model.set_reference_images(inputs['portrait'])
 	print ("image loaded")
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
-	# pbar = tqdm(op, leave=False, total=inputs['iterations'])
-	# for loss in pbar:
-	# 	pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
-	# print(' '.join(names), ' loss:', loss)
+	pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=1.0)
+	for loss in pbar:
+		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
+	print(' '.join(names), ' loss:', loss)
 
 	# Generate images from found dlatents and save them
 	generated_images = generator.generate_images()
@@ -67,6 +67,7 @@ def find_in_space(model, inputs):
 	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 
 	generator.reset_dlatents()
+	print ("returning generated image")
 	#return {'latent_vector' : dlatent}
 	return {'generated': img}
 
