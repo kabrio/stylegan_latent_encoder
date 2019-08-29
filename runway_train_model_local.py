@@ -79,8 +79,8 @@ generate_outputs = {
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
 	#names = os.path.splitext(os.path.basename(inputs['portrait']))
-
-	names = ["test_name"]
+	#print(names)
+	names = ["looking at you!"]
 	img = load_local_image("images/hec.jpg", 512)
 	perceptual_model.set_reference_images(img)
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)

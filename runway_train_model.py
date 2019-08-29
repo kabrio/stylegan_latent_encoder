@@ -35,7 +35,7 @@ def setup(opts):
 
 generate_inputs = {
 	'portrait': runway.image(),
-	'iterations': runway.number(min=100, max=5000, default=1000, step=1.0)
+	'iterations': runway.number(min=1, max=5000, default=10, step=1.0)
 }
 
 # generate_outputs = {
@@ -48,8 +48,7 @@ generate_outputs = {
 
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
-	#names = os.path.splitext(os.path.basename(inputs['portrait']))
-	names = ["test_name"]
+	names = ["looking at you!"]
 	perceptual_model.set_reference_images(inputs['portrait'])
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 	pbar = tqdm(op, leave=False, total=inputs['iterations'])
@@ -68,7 +67,7 @@ def find_in_space(model, inputs):
 
 	generator.reset_dlatents()
 	#return {'latent_vector' : dlatent}
-	return {'image': img}
+	return {'generated': img}
 
 if __name__ == '__main__':
 	runway.run(debug=True)
