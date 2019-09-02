@@ -29,7 +29,7 @@ def setup(opts):
 	with open(model, 'rb') as file:
 		G, D, Gs = pickle.load(file)
 	Gs.print_layers()	
-	generator = Generator(Gs, batch_size=1, randomize_noise=False)		
+	#generator = Generator(Gs, batch_size=1, randomize_noise=False)		
 	perceptual_model = PerceptualModel(opts['image dimensions'], layer=9, batch_size=1)
 	perceptual_model.build_perceptual_model(generator.generated_image)
 	return Gs
@@ -61,6 +61,7 @@ def find_in_space(model, inputs):
 	global prevIterations
 	global generated_dlatents
 	if (inputs['iterations'] != prevIterations):
+		generator = Generator(model, batch_size=1, randomize_noise=False)		
 		generator.reset_dlatents()
 		names = ["looking at you!"]
 		perceptual_model.set_reference_images(inputs['portrait'])
