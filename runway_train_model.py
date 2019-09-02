@@ -15,6 +15,7 @@ from encoder.generator_model import Generator
 from encoder.perceptual_model import PerceptualModel
 import runway
 
+prevIterations = -1
 
 @runway.setup(options={'checkpoint': runway.file(extension='.pkl'), 'image dimensions': runway.number(min=128, max=1024, default=512, step=128)})
 def setup(opts):
@@ -42,7 +43,8 @@ def generate_image(generator, latent_vector):
 
 generate_inputs = {
 	'portrait': runway.image(),
-	'iterations': runway.number(min=1, max=5000, default=10, step=1.0)
+	'iterations': runway.number(min=1, max=5000, default=10, step=1.0),
+	'age': runway.number(min=-30, max=20, default=4, step=0.2)
 }
 
 # generate_outputs = {
@@ -55,16 +57,20 @@ generate_outputs = {
 
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
-	names = ["looking at you!"]
-	perceptual_model.set_reference_images(inputs['portrait'])
-	print ("image loaded")
-	print ("encoding for: ", inputs['iterations'])
-	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
-	pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=30.0, miniters=50, disable=True)
-	for loss in pbar:
-		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
-	print(' '.join(names), ' loss:', loss)
+	global prevIterations
+	if (inputs['iterations'] != prevIterations):
+		names = ["looking at you!"]
+		perceptual_model.set_reference_images(inputs['portrait'])
+		print ("image loaded")
+		print ("encoding for: ", inputs['iterations'])
+		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
+		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=36000.0, miniters=50000, disable=True)
+		for loss in pbar:
+			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
+		print(' '.join(names), ' loss:', loss)
+		prevIterations = inputs['iterations']
 
+	print ("mixing new human")	
 	# load latent vectors
 	generated_dlatents = generator.get_dlatents()
 
@@ -73,7 +79,7 @@ def find_in_space(model, inputs):
 	age_direction = np.load('ffhq_dataset/latent_directions/age.npy')
 	direction = age_direction
 	# model = generator
-	coeff = 5
+	coeff = inputs['age']
 	new_latent_vector = generated_dlatents
 	new_latent_vector[:8] = (generated_dlatents + coeff*direction)[:8]
 

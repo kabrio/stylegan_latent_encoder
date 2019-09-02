@@ -19,6 +19,8 @@ from encoder.generator_model import Generator
 from encoder.perceptual_model import PerceptualModel
 import runway
 
+prevIterations = -1
+
 
 def load_local_image(images_path, img_size):
 	img = image.load_img(images_path, target_size=(img_size, img_size))
@@ -65,9 +67,9 @@ def setup(opts):
 
 generate_inputs = {
 	'portrait': runway.image(),
-	'iterations': runway.number(min=100, max=5000, default=1000, step=1.0)
+	'iterations': runway.number(min=1, max=5000, default=10, step=1.0),
+	'age': runway.number(min=-30, max=20, default=4, step=0.2)
 }
-
 # generate_outputs = {
 # 	'latent_vector': runway.file()
 # }
@@ -80,14 +82,18 @@ generate_outputs = {
 def find_in_space(model, inputs):
 	#names = os.path.splitext(os.path.basename(inputs['portrait']))
 	#print(names)
-	names = ["looking at you!"]
-	img = load_local_image("images/hec.jpg", 512)
-	perceptual_model.set_reference_images(img)
-	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)
-	pbar = tqdm(op, leave=False, total=inputs[iterations])
-	for loss in pbar:
-		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
-	print(' '.join(names), ' loss:', loss)
+	global prevIterations
+	if (inputs['iterations'] != prevIterations):
+		names = ["looking at you!"]
+		img = load_local_image("images/hec.jpg", 512)
+		perceptual_model.set_reference_images(img)
+		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs[iterations], learning_rate=1.)
+		pbar = tqdm(op, leave=False, total=inputs[iterations])
+		for loss in pbar:
+			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
+		print(' '.join(names), ' loss:', loss)
+		prevIterations = inputs['iterations']
+
 
 	# Generate images from found dlatents and save them
 	generated_images = generator.generate_images()
