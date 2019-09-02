@@ -75,7 +75,7 @@ def find_in_space(model, inputs):
 	# model = generator
 	coeff = 5
 	new_latent_vector = generated_dlatents
-	new_latent_vector[:8] = (latent_vector + coeff*direction)[:8]
+	new_latent_vector[:8] = (generated_dlatents + coeff*direction)[:8]
 
 	# Generate images from found dlatents and save them
 	generator.set_dlatents(new_latent_vector)
