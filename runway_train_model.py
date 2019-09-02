@@ -33,6 +33,13 @@ def setup(opts):
 	return Gs
 
 
+def generate_image(generator, latent_vector):
+	latent_vector = latent_vector.reshape((1, 18, 512))
+	generator.set_dlatents(latent_vector)
+	img_array = generator.generate_images()[0]
+	img = PIL.Image.fromarray(img_array, 'RGB')
+	return img.resize((512, 512))   
+
 generate_inputs = {
 	'portrait': runway.image(),
 	'iterations': runway.number(min=1, max=5000, default=10, step=1.0)
@@ -58,9 +65,21 @@ def find_in_space(model, inputs):
 		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 	print(' '.join(names), ' loss:', loss)
 
-	# Generate images from found dlatents and save them
-	generated_images = generator.generate_images()
+	# load latent vectors
 	generated_dlatents = generator.get_dlatents()
+
+	# modify latent vectors
+	# load direction
+	age_direction = np.load('ffhq_dataset/latent_directions/age.npy')
+	direction = age_direction
+	# model = generator
+	coeff = 5
+	new_latent_vector = generated_dlatents
+	new_latent_vector[:8] = (latent_vector + coeff*direction)[:8]
+
+	# Generate images from found dlatents and save them
+	generator.set_dlatents(new_latent_vector)
+	generated_images = generator.generate_images()
 	for img_array, dlatent, img_name in zip(generated_images, generated_dlatents, names):
 		img = PIL.Image.fromarray(img_array, 'RGB')
 		img.resize((512, 512))

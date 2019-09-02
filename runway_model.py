@@ -2,36 +2,37 @@
 
 import helpers
 import os
-import argparse
 import pickle
-from tqdm import tqdm
 import PIL.Image
 import numpy as np
 import dnnlib
 import dnnlib.tflib as tflib
 import config
-import matplotlib.pyplot as plt
 from encoder.generator_model import Generator
-from encoder.perceptual_model import PerceptualModel
+import matplotlib.pyplot as plt
 import runway
 
 
-
-@runway.setup(options={'people_vector': runway.file(extension='.npy'), 'checkpoint': runway.file(extension='.pkl')})
+@runway.setup(options={'checkpoint': runway.file(extension='.pkl'), 
+	'people_vector': runway.file(extension='.npy'),
+	'people_vector2': runway.file(extension='.npy')})
 def setup(opts):
-	# load latent representation
-	global latent_vector
-	p1 = opts['people_vector']
-	latent_vector = np.load(p1)
 	tflib.init_tf()
 	model = opts['checkpoint']
 	print("open model %s" % model)
 	with open(model, 'rb') as file:
 		G, D, Gs = pickle.load(file)
 	Gs.print_layers()
+	# load latent representation
+	p1 = inputs['people_vector']
+	global latent_vector_1
+	latent_vector_1 = np.load(p1)
+	p2 = inputs['people_vector2']
+	global latent_vector_2
+	latent_vector_2 = np.load(p2)
 	global generator
 	generator = Generator(Gs, batch_size=1, randomize_noise=False)
-	return Gs
+	return generator
 
 # def setup(opts):
 # 	tflib.init_tf()
@@ -54,23 +55,24 @@ def generate_image(generator, latent_vector):
 	return img.resize((512, 512))   
 
 generate_inputs = {
-	'age': runway.number(min=-26, max=26, default=6, step=0.1)
+	'age': runway.number(min=-500, max=500, default=6, step=0.1),
 }
 
 generate_outputs = {
-	'image': runway.image(width=512, height=512)
+	'image': runway.image(width=512, height=512),
 }
 
 @runway.command('generat3r', inputs=generate_inputs, outputs=generate_outputs)
-def move_and_show(model, inputs):
+def move_and_show(model, inputs):	
+	latent_vector = (latent_vector_1 + latent_vector_2) * 2
 	# load direction
 	age_direction = np.load('ffhq_dataset/latent_directions/age.npy')
 	direction = age_direction
-	# generator
-	coeff = inputs['age']
+	# model = generator
+	coeff = inputs['age']/5.0
 	new_latent_vector = latent_vector.copy()
 	new_latent_vector[:8] = (latent_vector + coeff*direction)[:8]
-	image = (generate_image(generator, new_latent_vector))
+	image = (generate_image(model, new_latent_vector))
 	#ax[i].set_title('Coeff: %0.1f' % coeff)
 	#plt.show()
 	return {'image': image}
