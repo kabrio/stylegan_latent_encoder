@@ -69,6 +69,8 @@ def find_in_space(model, inputs):
 			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 		print(' '.join(names), ' loss:', loss)
 		prevIterations = inputs['iterations']
+	else:
+		names = ["mixing you."]
 
 	print ("mixing new human")	
 	# load latent vectors
