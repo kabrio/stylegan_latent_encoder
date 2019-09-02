@@ -60,12 +60,12 @@ generate_outputs = {
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
 	global generated_dlatents
+	global prevIterations
 	if (inputs['iterations'] != prevIterations):
 		generator.reset_dlatents()
 		names = ["looking at you!"]
 		perceptual_model.set_reference_images(inputs['portrait'])
 		print ("image loaded.")
-		global prevIterations
 		prevIterations = inputs['iterations']
 		print ("encoding for: ", prevIterations, " iterations.")
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
