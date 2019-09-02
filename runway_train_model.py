@@ -60,7 +60,7 @@ def find_in_space(model, inputs):
 	print ("image loaded")
 	print ("encoding for: ", inputs['iterations'])
 	op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
-	pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=30.0, miniters=50)
+	pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=30.0, miniters=50, disable=True)
 	for loss in pbar:
 		pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 	print(' '.join(names), ' loss:', loss)
