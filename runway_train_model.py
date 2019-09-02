@@ -67,10 +67,10 @@ def find_in_space(model, inputs):
 		prevIterations = inputs['iterations']
 		print ("encoding for: ", prevIterations)
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
-		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=36000.0, miniters=50000, disable=True)
-		for loss in pbar:
-			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
-		print(' '.join(names), ' loss:', loss)
+		# pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=36000.0, miniters=50000, disable=True)
+		# for loss in pbar:
+		# 	pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
+		# print(' '.join(names), ' loss:', loss)
 	else:
 		names = ["mixing you."]
 
