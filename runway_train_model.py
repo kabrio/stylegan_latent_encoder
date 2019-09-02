@@ -59,6 +59,7 @@ generate_outputs = {
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
 	global prevIterations
+	global generated_dlatents
 	if (inputs['iterations'] != prevIterations):
 		generator.reset_dlatents()
 		names = ["looking at you!"]
@@ -67,6 +68,8 @@ def find_in_space(model, inputs):
 		prevIterations = inputs['iterations']
 		print ("encoding for: ", prevIterations)
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
+		# load latent vectors	
+		generated_dlatents = generator.get_dlatents()
 		# pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=36000.0, miniters=50000, disable=True)
 		# for loss in pbar:
 		# 	pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
@@ -75,9 +78,6 @@ def find_in_space(model, inputs):
 		names = ["mixing you."]
 
 	print ("mixing new human")	
-	# load latent vectors
-	global generated_dlatents
-	generated_dlatents = generator.get_dlatents()
 
 	# modify latent vectors
 	# load direction
