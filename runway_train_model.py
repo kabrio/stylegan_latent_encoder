@@ -29,7 +29,7 @@ def setup(opts):
 	with open(model, 'rb') as file:
 		G, D, Gs = pickle.load(file)
 	Gs.print_layers()	
-	#generator = Generator(Gs, batch_size=1, randomize_noise=False)		
+	generator = Generator(Gs, batch_size=1, randomize_noise=False)		
 	perceptual_model = PerceptualModel(opts['image dimensions'], layer=9, batch_size=1)
 	perceptual_model.build_perceptual_model(generator.generated_image)
 	return Gs
