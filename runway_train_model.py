@@ -71,7 +71,7 @@ def find_in_space(model, inputs):
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 		# load latent vectors	
 		generated_dlatents = generator.get_dlatents()
-		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=2.0, miniters=10, disable=False)
+		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=2.0, miniters=10, disable=True)
 		for loss in pbar:
 			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 		print(' '.join(names), ' loss:', loss)
@@ -86,8 +86,8 @@ def find_in_space(model, inputs):
 	direction = age_direction
 	# model = generator
 	coeff = inputs['age']
-	#new_latent_vector = generated_dlatents.copy()
-	new_latent_vector[:8] = (generated_dlatents.copy() + coeff*direction)[:8]
+	new_latent_vector = generated_dlatents.copy()
+	new_latent_vector[:8] = (new_latent_vector + coeff*direction)[:8]
 
 	# Generate images from found dlatents and save them
 	generator.set_dlatents(new_latent_vector)
