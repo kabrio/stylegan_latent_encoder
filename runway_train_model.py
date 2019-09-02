@@ -102,7 +102,7 @@ def find_in_space(model, inputs):
 	print ("returning text")
 	#return {'vector': generated_dlatents}
 	#return {'generated': img}
-	s = str(new_latent_vector)
+	s = new_latent_vector.tostring()
 	s = s.encode('utf-8')
 	s.hex()
 	return{"hextext": s}
