@@ -16,6 +16,7 @@ from encoder.perceptual_model import PerceptualModel
 import runway
 
 prevIterations = -1
+generated_dlatents = 0
 
 @runway.setup(options={'checkpoint': runway.file(extension='.pkl'), 'image dimensions': runway.number(min=128, max=1024, default=512, step=128)})
 def setup(opts):
@@ -59,21 +60,23 @@ generate_outputs = {
 def find_in_space(model, inputs):
 	global prevIterations
 	if (inputs['iterations'] != prevIterations):
+		generator.reset_dlatents()
 		names = ["looking at you!"]
 		perceptual_model.set_reference_images(inputs['portrait'])
 		print ("image loaded")
-		print ("encoding for: ", inputs['iterations'])
+		prevIterations = inputs['iterations']
+		print ("encoding for: ", prevIterations)
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=36000.0, miniters=50000, disable=True)
 		for loss in pbar:
 			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 		print(' '.join(names), ' loss:', loss)
-		prevIterations = inputs['iterations']
 	else:
 		names = ["mixing you."]
 
 	print ("mixing new human")	
 	# load latent vectors
+	global generated_dlatents
 	generated_dlatents = generator.get_dlatents()
 
 	# modify latent vectors
@@ -94,7 +97,6 @@ def find_in_space(model, inputs):
 	#	img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
 	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 
-	generator.reset_dlatents()
 	print ("returning generated image")
 	#return {'latent_vector' : dlatent}
 	return {'generated': img}
