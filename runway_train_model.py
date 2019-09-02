@@ -53,22 +53,21 @@ generate_inputs = {
 # }
 
 generate_outputs = {
-	'generated': runway.image(width=512, height=512)
+#	'generated': runway.image(width=512, height=512)
+	'vector': runway.vector(length=512)
 }
 
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
 def find_in_space(model, inputs):
-	global prevIterations
 	global generated_dlatents
-	global generator
 	if (inputs['iterations'] != prevIterations):
-		generator = Generator(model, batch_size=1, randomize_noise=False)		
 		generator.reset_dlatents()
 		names = ["looking at you!"]
 		perceptual_model.set_reference_images(inputs['portrait'])
-		print ("image loaded")
+		print ("image loaded.")
+		global prevIterations
 		prevIterations = inputs['iterations']
-		print ("encoding for: ", prevIterations)
+		print ("encoding for: ", prevIterations, " iterations.")
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 		# load latent vectors	
 		generated_dlatents = generator.get_dlatents()
@@ -87,8 +86,8 @@ def find_in_space(model, inputs):
 	direction = age_direction
 	# model = generator
 	coeff = inputs['age']
-	new_latent_vector = generated_dlatents
-	new_latent_vector[:8] = (generated_dlatents + coeff*direction)[:8]
+	#new_latent_vector = generated_dlatents.copy()
+	new_latent_vector[:8] = (generated_dlatents.copy() + coeff*direction)[:8]
 
 	# Generate images from found dlatents and save them
 	generator.set_dlatents(new_latent_vector)
@@ -99,9 +98,9 @@ def find_in_space(model, inputs):
 	#	img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
 	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 
-	print ("returning generated image")
-	#return {'latent_vector' : dlatent}
-	return {'generated': img}
+	print ("returning vector")
+	return {'vector' : generated_dlatents}
+	#return {'generated': img}
 
 if __name__ == '__main__':
 	runway.run(debug=True)
