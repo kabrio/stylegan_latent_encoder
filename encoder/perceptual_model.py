@@ -70,7 +70,10 @@ class PerceptualModel:
 		vars_to_optimize = vars_to_optimize if isinstance(vars_to_optimize, list) else [vars_to_optimize]
 		optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
 		min_op = optimizer.minimize(self.loss, var_list=[vars_to_optimize])
+		i = 0
 		for _ in range(iterations):
 			_, loss = self.sess.run([min_op, self.loss])
+			print(i, " of ", iterations, " current loss: ", loss)
+			i = i + 1
 			yield loss
 
