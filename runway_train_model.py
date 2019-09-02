@@ -60,6 +60,7 @@ generate_outputs = {
 def find_in_space(model, inputs):
 	global prevIterations
 	global generated_dlatents
+	global generator
 	if (inputs['iterations'] != prevIterations):
 		generator = Generator(model, batch_size=1, randomize_noise=False)		
 		generator.reset_dlatents()
