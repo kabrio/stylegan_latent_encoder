@@ -54,7 +54,8 @@ generate_inputs = {
 
 generate_outputs = {
 #	'generated': runway.image(width=512, height=512)
-	'vector': runway.vector(length=512)
+	# 'vector': runway.vector(length=512)
+	"hextext": runway.text
 }
 
 @runway.command('encode', inputs=generate_inputs, outputs=generate_outputs)
@@ -98,9 +99,12 @@ def find_in_space(model, inputs):
 	#	img.save(os.path.join(args.generated_images_dir, f'{img_name}.png'), 'PNG')
 	#	np.save(os.path.join(args.dlatent_dir, f'{img_name}.npy'), dlatent)
 
-	print ("returning vector")
-	return {'vector' : generated_dlatents}
+	print ("returning text")
+	#return {'vector': generated_dlatents}
 	#return {'generated': img}
+	s = new_latent_vector.encode('utf-8')
+	s.hex()
+	return{"hextext": s}
 
 if __name__ == '__main__':
 	runway.run(debug=True)
