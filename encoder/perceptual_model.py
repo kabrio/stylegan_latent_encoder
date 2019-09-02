@@ -73,7 +73,7 @@ class PerceptualModel:
 		i = 0
 		for _ in range(iterations):
 			_, loss = self.sess.run([min_op, self.loss])
-			print(i, " of ", iterations, " current loss: ", loss)
-			i = i + 1
+			# print(i, " of ", iterations, " current loss: ", loss)
+			# i = i + 1
 			yield loss
 

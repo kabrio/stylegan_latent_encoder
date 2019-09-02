@@ -70,7 +70,7 @@ def find_in_space(model, inputs):
 		op = perceptual_model.optimize(generator.dlatent_variable, iterations=inputs['iterations'], learning_rate=1.)
 		# load latent vectors	
 		generated_dlatents = generator.get_dlatents()
-		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=0.1, miniters=1, disable=True)
+		pbar = tqdm(op, leave=False, total=inputs['iterations'], mininterval=2.0, miniters=10, disable=False)
 		for loss in pbar:
 			pbar.set_description(' '.join(names)+' Loss: %.2f' % loss)
 		print(' '.join(names), ' loss:', loss)
