@@ -23,7 +23,7 @@ mock==2.0.0
 numpy==1.16.2
 pbr==5.1.2
 Pillow==5.4.1
-protobuf==3.6.1
+protobuf==3.18.3
 requests==2.21.0
 six==1.12.0
 termcolor==1.1.0
